@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# Output and temporary images
+result_image.jpg
+gui_result.jpg
+pre_inpainting_*.jpg
+plot_*.jpg
+
+# Editor and IDE configurations
+.vscode/
+.idea/
+*.swp
+
+# OS generated files
+.DS_Store
+Thumbs.db
