@@ -10,7 +10,9 @@ Artem Onyshchuk, Yurii Bobas, Ivan Polianskyi
 ## Videos
 
 Yurii Bobas - https://youtu.be/Xv2bpqCH97E?si=QyJRaIczXYbWnLUD
+
 Ivan Poliansky  - https://youtu.be/WqXQksyIAvI
+
 Artem Onyshchuk - https://www.youtube.com/watch?v=wBmxTD88TiI
 
 
