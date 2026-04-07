@@ -1,12 +1,23 @@
 # Linear Algebra Project
-Video:
-Ivan Poliansky  - https://youtu.be/WqXQksyIAvI
 
-image composition: human detection, geometric transformations (translation/scaling), and hole filling with inpainting.
+Image Composition and Spatial Rearrangement using Geometric Transformations
 
 ## Authors
 
-Arttem Onyshchuk, Yurii Bobas, Ivan Polianskyi
+Artem Onyshchuk, Yurii Bobas, Ivan Polianskyi
+
+
+## Videos
+
+Yurii Bobas - https://youtu.be/Xv2bpqCH97E?si=QyJRaIczXYbWnLUD
+Ivan Poliansky  - https://youtu.be/WqXQksyIAvI
+Artem Onyshchuk - https://www.youtube.com/watch?v=wBmxTD88TiI
+
+
+## Short description
+
+Image composition: human detection, geometric transformations (translation/scaling), and hole filling with inpainting.
+
 
 ## Files
 
