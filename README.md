@@ -1,4 +1,6 @@
 # Linear Algebra Project
+Video:
+Ivan Poliansky  - https://youtu.be/WqXQksyIAvI
 
 image composition: human detection, geometric transformations (translation/scaling), and hole filling with inpainting.
 
