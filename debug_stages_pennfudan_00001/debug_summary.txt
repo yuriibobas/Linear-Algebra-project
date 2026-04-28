@@ -1,0 +1,10 @@
+Debug summary for pipeline stages
+Input: PennFudanPed/PNGImages/FudanPed00001.png
+Detected boxes: 2
+  box_0: (377, 174, 170, 338)
+  box_1: (247, 314, 65, 129)
+Centers: A=(462,343), B=(279,378)
+Translations: A=(-183,35), B=(183,-35)
+Inpaint pixels: 14529
+Mask A pixels: 6753
+Mask B pixels: 3084

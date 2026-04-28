@@ -152,3 +152,78 @@ def get_binary_masks(
         masks.append((binary_mask, rect))
 
     return masks
+
+
+def filter_person_boxes(
+    boxes,
+    image_shape,
+    min_area_ratio=0.01,
+    max_area_ratio=0.65,
+    min_aspect=0.2,
+    max_aspect=1.2,
+):
+    """Drop unlikely person boxes using simple geometry priors.
+
+    This helps remove tiny false positives and implausible regions
+    before swap selection.
+    """
+    if boxes is None:
+        return []
+
+    h, w = image_shape[:2]
+    image_area = float(max(1, h * w))
+    filtered = []
+
+    for b in boxes:
+        x, y, bw, bh = [int(v) for v in b]
+        if bw <= 0 or bh <= 0:
+            continue
+        area_ratio = (bw * bh) / image_area
+        aspect = bw / float(max(1, bh))
+        if area_ratio < min_area_ratio or area_ratio > max_area_ratio:
+            continue
+        if aspect < min_aspect or aspect > max_aspect:
+            continue
+        filtered.append((x, y, bw, bh))
+
+    return filtered
+
+
+def pick_swap_pair(boxes, min_center_distance_ratio=0.12, image_shape=None):
+    """Pick two boxes that are both large and sufficiently separated."""
+    if boxes is None or len(boxes) < 2:
+        return []
+
+    boxes = list(boxes)
+    boxes = sorted(boxes, key=lambda b: b[2] * b[3], reverse=True)
+
+    if image_shape is None:
+        return boxes[:2]
+
+    h, w = image_shape[:2]
+    min_dist = min_center_distance_ratio * float(max(h, w))
+
+    best_pair = None
+    best_score = -1.0
+
+    for i in range(len(boxes)):
+        for j in range(i + 1, len(boxes)):
+            b1 = boxes[i]
+            b2 = boxes[j]
+            c1x = b1[0] + b1[2] / 2.0
+            c1y = b1[1] + b1[3] / 2.0
+            c2x = b2[0] + b2[2] / 2.0
+            c2y = b2[1] + b2[3] / 2.0
+            dist = float(np.hypot(c2x - c1x, c2y - c1y))
+            if dist < min_dist:
+                continue
+            area_score = float(b1[2] * b1[3] + b2[2] * b2[3])
+            score = area_score + dist * 10.0
+            if score > best_score:
+                best_score = score
+                best_pair = [b1, b2]
+
+    if best_pair is not None:
+        return best_pair
+
+    return boxes[:2]
