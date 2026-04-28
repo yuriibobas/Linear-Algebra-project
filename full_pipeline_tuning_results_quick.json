@@ -1,0 +1,550 @@
+{
+  "tested_configs": 20,
+  "valid_configs": 15,
+  "best": {
+    "win_stride": [
+      4,
+      4
+    ],
+    "padding": [
+      8,
+      8
+    ],
+    "scale": 1.03,
+    "score_threshold": 0.0,
+    "nms_threshold": 0.25,
+    "hit_threshold": 0.0,
+    "use_preprocessing": true,
+    "shrink_factor": 0.08,
+    "grabcut_iters": 7,
+    "num_boxes": 2,
+    "total_score": 0.7169202722044795,
+    "det_score": 0.8482168239800976,
+    "hole_score": 0.78778076171875,
+    "continuity_score": 0.8154818816931523,
+    "texture_score": 0.0005662843464035166,
+    "hole_ratio": 0.035369873046875,
+    "boundary_mae": 5.711330088489376,
+    "det_metrics": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "mean_iou_matched": 0.6627040532891058
+    }
+  },
+  "top20": [
+    {
+      "win_stride": [
+        4,
+        4
+      ],
+      "padding": [
+        8,
+        8
+      ],
+      "scale": 1.03,
+      "score_threshold": 0.0,
+      "nms_threshold": 0.25,
+      "hit_threshold": 0.0,
+      "use_preprocessing": true,
+      "shrink_factor": 0.08,
+      "grabcut_iters": 7,
+      "num_boxes": 2,
+      "total_score": 0.7169202722044795,
+      "det_score": 0.8482168239800976,
+      "hole_score": 0.78778076171875,
+      "continuity_score": 0.8154818816931523,
+      "texture_score": 0.0005662843464035166,
+      "hole_ratio": 0.035369873046875,
+      "boundary_mae": 5.711330088489376,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.6627040532891058
+      }
+    },
+    {
+      "win_stride": [
+        8,
+        8
+      ],
+      "padding": [
+        16,
+        16
+      ],
+      "scale": 1.05,
+      "score_threshold": 0.0,
+      "nms_threshold": 0.35,
+      "hit_threshold": 0.2,
+      "use_preprocessing": true,
+      "shrink_factor": 0.08,
+      "grabcut_iters": 7,
+      "num_boxes": 2,
+      "total_score": 0.7031877322791888,
+      "det_score": 0.9375596422998052,
+      "hole_score": 0.4440460205078125,
+      "continuity_score": 0.9419163244748481,
+      "texture_score": 0.00046543393851710747,
+      "hole_ratio": 0.09265899658203125,
+      "boundary_mae": 1.6754874044318104,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.8612436495551224
+      }
+    },
+    {
+      "win_stride": [
+        4,
+        4
+      ],
+      "padding": [
+        16,
+        16
+      ],
+      "scale": 1.03,
+      "score_threshold": 0.0,
+      "nms_threshold": 0.35,
+      "hit_threshold": 0.0,
+      "use_preprocessing": true,
+      "shrink_factor": 0.08,
+      "grabcut_iters": 5,
+      "num_boxes": 2,
+      "total_score": 0.6796981723294533,
+      "det_score": 0.8482168239800976,
+      "hole_score": 0.8057765960693359,
+      "continuity_score": 0.6274547687894275,
+      "texture_score": 0.0006033848322379012,
+      "hole_ratio": 0.032370567321777344,
+      "boundary_mae": 13.050343381170938,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.6627040532891058
+      }
+    },
+    {
+      "win_stride": [
+        8,
+        8
+      ],
+      "padding": [
+        8,
+        8
+      ],
+      "scale": 1.05,
+      "score_threshold": 0.1,
+      "nms_threshold": 0.35,
+      "hit_threshold": 0.0,
+      "use_preprocessing": true,
+      "shrink_factor": 0.08,
+      "grabcut_iters": 7,
+      "num_boxes": 2,
+      "total_score": 0.614147711584437,
+      "det_score": 0.925725903341927,
+      "hole_score": 0.5748119354248047,
+      "continuity_score": 0.4230813908931171,
+      "texture_score": 0.00044754643566867166,
+      "hole_ratio": 0.07086467742919922,
+      "boundary_mae": 24.085339739609367,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.8349464518709486
+      }
+    },
+    {
+      "win_stride": [
+        4,
+        4
+      ],
+      "padding": [
+        8,
+        8
+      ],
+      "scale": 1.05,
+      "score_threshold": 0.2,
+      "nms_threshold": 0.35,
+      "hit_threshold": 0.2,
+      "use_preprocessing": true,
+      "shrink_factor": 0.08,
+      "grabcut_iters": 7,
+      "num_boxes": 2,
+      "total_score": 0.5790172846933849,
+      "det_score": 0.9303539685818296,
+      "hole_score": 0.3606071472167969,
+      "continuity_score": 0.47837513861616354,
+      "texture_score": 0.0006649502584391607,
+      "hole_ratio": 0.10656547546386719,
+      "boundary_mae": 20.646081273206608,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.8452310412929545
+      }
+    },
+    {
+      "win_stride": [
+        4,
+        4
+      ],
+      "padding": [
+        8,
+        8
+      ],
+      "scale": 1.05,
+      "score_threshold": 0.1,
+      "nms_threshold": 0.25,
+      "hit_threshold": 0.0,
+      "use_preprocessing": true,
+      "shrink_factor": 0.08,
+      "grabcut_iters": 7,
+      "num_boxes": 2,
+      "total_score": 0.5759507281237108,
+      "det_score": 0.9266295292259887,
+      "hole_score": 0.29975318908691406,
+      "continuity_score": 0.5351755315832749,
+      "texture_score": 0.0006498108498841272,
+      "hole_ratio": 0.11670780181884766,
+      "boundary_mae": 17.504493705458305,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.8369545093910858
+      }
+    },
+    {
+      "win_stride": [
+        4,
+        4
+      ],
+      "padding": [
+        8,
+        8
+      ],
+      "scale": 1.05,
+      "score_threshold": 0.2,
+      "nms_threshold": 0.35,
+      "hit_threshold": 0.0,
+      "use_preprocessing": true,
+      "shrink_factor": 0.08,
+      "grabcut_iters": 7,
+      "num_boxes": 2,
+      "total_score": 0.5751871672783698,
+      "det_score": 0.9266295292259887,
+      "hole_score": 0.34351539611816406,
+      "continuity_score": 0.4859979758295417,
+      "texture_score": 0.0005743785675205402,
+      "hole_ratio": 0.10941410064697266,
+      "boundary_mae": 20.20342296140301,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.8369545093910858
+      }
+    },
+    {
+      "win_stride": [
+        4,
+        4
+      ],
+      "padding": [
+        8,
+        8
+      ],
+      "scale": 1.05,
+      "score_threshold": 0.1,
+      "nms_threshold": 0.35,
+      "hit_threshold": 0.2,
+      "use_preprocessing": true,
+      "shrink_factor": 0.08,
+      "grabcut_iters": 7,
+      "num_boxes": 2,
+      "total_score": 0.5736707134718703,
+      "det_score": 0.9303539685818296,
+      "hole_score": 0.36084747314453125,
+      "continuity_score": 0.45388237606462095,
+      "texture_score": 0.0005615777695618335,
+      "hole_ratio": 0.10652542114257812,
+      "boundary_mae": 22.117681545871402,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.8452310412929545
+      }
+    },
+    {
+      "win_stride": [
+        8,
+        8
+      ],
+      "padding": [
+        8,
+        8
+      ],
+      "scale": 1.05,
+      "score_threshold": 0.0,
+      "nms_threshold": 0.25,
+      "hit_threshold": 0.0,
+      "use_preprocessing": true,
+      "shrink_factor": 0.0,
+      "grabcut_iters": 5,
+      "num_boxes": 2,
+      "total_score": 0.5622134380065693,
+      "det_score": 0.9792160146861286,
+      "hole_score": 0.0,
+      "continuity_score": 0.6856376924676065,
+      "texture_score": 0.0007878422732455956,
+      "hole_ratio": 0.1836252212524414,
+      "boundary_mae": 10.567366204218567,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.9538133659691745
+      }
+    },
+    {
+      "win_stride": [
+        4,
+        4
+      ],
+      "padding": [
+        16,
+        16
+      ],
+      "scale": 1.03,
+      "score_threshold": 0.2,
+      "nms_threshold": 0.25,
+      "hit_threshold": 0.0,
+      "use_preprocessing": true,
+      "shrink_factor": 0.0,
+      "grabcut_iters": 7,
+      "num_boxes": 2,
+      "total_score": 0.5527800968446682,
+      "det_score": 0.8990114278822788,
+      "hole_score": 0.3477153778076172,
+      "continuity_score": 0.43247607006659317,
+      "texture_score": 0.0005848063362210878,
+      "hole_ratio": 0.10871410369873047,
+      "boundary_mae": 23.47039193706824,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.7755809508495084
+      }
+    },
+    {
+      "win_stride": [
+        8,
+        8
+      ],
+      "padding": [
+        16,
+        16
+      ],
+      "scale": 1.05,
+      "score_threshold": 0.1,
+      "nms_threshold": 0.35,
+      "hit_threshold": 0.2,
+      "use_preprocessing": true,
+      "shrink_factor": 0.0,
+      "grabcut_iters": 5,
+      "num_boxes": 2,
+      "total_score": 0.5512112197379246,
+      "det_score": 0.979311593089313,
+      "hole_score": 0.15188980102539062,
+      "continuity_score": 0.4766792241117964,
+      "texture_score": 0.0007405161536779368,
+      "hole_ratio": 0.14135169982910156,
+      "boundary_mae": 20.74552201267886,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.9540257624206956
+      }
+    },
+    {
+      "win_stride": [
+        4,
+        4
+      ],
+      "padding": [
+        8,
+        8
+      ],
+      "scale": 1.05,
+      "score_threshold": 0.2,
+      "nms_threshold": 0.25,
+      "hit_threshold": 0.2,
+      "use_preprocessing": true,
+      "shrink_factor": 0.0,
+      "grabcut_iters": 7,
+      "num_boxes": 2,
+      "total_score": 0.5482177693619592,
+      "det_score": 0.9809394841307675,
+      "hole_score": 0.09830856323242188,
+      "continuity_score": 0.515986401913397,
+      "texture_score": 0.0007323697125578629,
+      "hole_ratio": 0.1502819061279297,
+      "boundary_mae": 18.526896268407274,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.9576432980683722
+      }
+    },
+    {
+      "win_stride": [
+        4,
+        4
+      ],
+      "padding": [
+        8,
+        8
+      ],
+      "scale": 1.05,
+      "score_threshold": 0.0,
+      "nms_threshold": 0.25,
+      "hit_threshold": 0.0,
+      "use_preprocessing": true,
+      "shrink_factor": 0.0,
+      "grabcut_iters": 5,
+      "num_boxes": 2,
+      "total_score": 0.544519179906868,
+      "det_score": 0.9806178897223956,
+      "hole_score": 0.0,
+      "continuity_score": 0.6025084035190035,
+      "texture_score": 0.0008293649944703088,
+      "hole_ratio": 0.1888103485107422,
+      "boundary_mae": 14.186302647025954,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.9569286438275456
+      }
+    },
+    {
+      "win_stride": [
+        8,
+        8
+      ],
+      "padding": [
+        16,
+        16
+      ],
+      "scale": 1.05,
+      "score_threshold": 0.1,
+      "nms_threshold": 0.25,
+      "hit_threshold": 0.0,
+      "use_preprocessing": true,
+      "shrink_factor": 0.0,
+      "grabcut_iters": 7,
+      "num_boxes": 2,
+      "total_score": 0.5442315141586601,
+      "det_score": 0.9758547924443297,
+      "hole_score": 0.0,
+      "continuity_score": 0.6102632154793245,
+      "texture_score": 0.0008814917430021109,
+      "hole_ratio": 0.23424911499023438,
+      "boundary_mae": 13.828217594763439,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.9463439832096214
+      }
+    },
+    {
+      "win_stride": [
+        4,
+        4
+      ],
+      "padding": [
+        16,
+        16
+      ],
+      "scale": 1.05,
+      "score_threshold": 0.1,
+      "nms_threshold": 0.35,
+      "hit_threshold": 0.2,
+      "use_preprocessing": true,
+      "shrink_factor": 0.08,
+      "grabcut_iters": 5,
+      "num_boxes": 2,
+      "total_score": 0.51378076401481,
+      "det_score": 0.93435835296325,
+      "hole_score": 0.1663494110107422,
+      "continuity_score": 0.3773736527994229,
+      "texture_score": 0.0005206740146244975,
+      "hole_ratio": 0.13894176483154297,
+      "boundary_mae": 27.28654490483184,
+      "det_metrics": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_iou_matched": 0.8541296732516664
+      }
+    }
+  ]
+}
