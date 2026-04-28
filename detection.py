@@ -1,6 +1,16 @@
 import cv2
 import numpy as np
 
+_CUSTOM_WIN_W = 64
+_CUSTOM_WIN_H = 128
+_CUSTOM_CELL = 8
+_CUSTOM_BINS = 9
+_CUSTOM_BIN_WIDTH = 180.0 / _CUSTOM_BINS
+_CUSTOM_BLOCK_EPS = 1e-6
+_CUSTOM_SCORE_OFFSET = 10.0
+_PEOPLE_SVM = None
+_HOG_DETECTOR = None
+
 
 def preprocess_for_hog(image):
     """Apply CLAHE on L-channel to normalise local contrast before HOG.
@@ -29,6 +39,155 @@ def shrink_boxes(boxes, factor=0.1):
     return result
 
 
+def _get_default_people_svm():
+    """Load OpenCV's default linear SVM coefficients once."""
+    global _PEOPLE_SVM
+    if _PEOPLE_SVM is None:
+        det = cv2.HOGDescriptor_getDefaultPeopleDetector().astype(np.float32)
+        # OpenCV stores free coefficient as -rho for this detector vector.
+        _PEOPLE_SVM = (det[:-1], float(-det[-1]))
+    return _PEOPLE_SVM
+
+
+def _get_opencv_hog_detector():
+    """Build and cache OpenCV HOG person detector once."""
+    global _HOG_DETECTOR
+    if _HOG_DETECTOR is None:
+        hog = cv2.HOGDescriptor()
+        hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+        _HOG_DETECTOR = hog
+    return _HOG_DETECTOR
+
+
+def _compute_hog_descriptor(gray_window):
+    """Compute Dalal-Triggs style HOG for a 64x128 grayscale window."""
+    gray = gray_window.astype(np.float32)
+    gy, gx = np.gradient(gray)
+    mag = np.sqrt(gx * gx + gy * gy)
+    ang = (np.degrees(np.arctan2(gy, gx)) + 180.0) % 180.0
+
+    h, w = gray.shape
+    cells_y = h // _CUSTOM_CELL
+    cells_x = w // _CUSTOM_CELL
+
+    if cells_y != 16 or cells_x != 8:
+        return None
+
+    hist = np.zeros((cells_y, cells_x, _CUSTOM_BINS), dtype=np.float32)
+
+    flat_ang = ang.ravel()
+    flat_mag = mag.ravel()
+    yy, xx = np.indices((h, w))
+    cell_y = (yy // _CUSTOM_CELL).ravel()
+    cell_x = (xx // _CUSTOM_CELL).ravel()
+
+    bin_pos = flat_ang / _CUSTOM_BIN_WIDTH
+    bin_low = np.floor(bin_pos).astype(np.int32) % _CUSTOM_BINS
+    bin_high = (bin_low + 1) % _CUSTOM_BINS
+    w_high = bin_pos - np.floor(bin_pos)
+    w_low = 1.0 - w_high
+
+    np.add.at(hist, (cell_y, cell_x, bin_low), flat_mag * w_low)
+    np.add.at(hist, (cell_y, cell_x, bin_high), flat_mag * w_high)
+
+    blocks = []
+    for by in range(cells_y - 1):
+        for bx in range(cells_x - 1):
+            block = hist[by:by + 2, bx:bx + 2, :].ravel()
+            norm = np.linalg.norm(block) + _CUSTOM_BLOCK_EPS
+            block = block / norm
+            block = np.clip(block, 0.0, 0.2)
+            block = block / (np.linalg.norm(block) + _CUSTOM_BLOCK_EPS)
+            blocks.append(block)
+
+    if not blocks:
+        return None
+    return np.concatenate(blocks).astype(np.float32)
+
+
+def _nms_xywh(boxes, scores, iou_threshold):
+    """Pure NumPy NMS for xywh boxes."""
+    if len(boxes) == 0:
+        return []
+
+    boxes = np.asarray(boxes, dtype=np.float32)
+    scores = np.asarray(scores, dtype=np.float32)
+    x1 = boxes[:, 0]
+    y1 = boxes[:, 1]
+    x2 = boxes[:, 0] + boxes[:, 2]
+    y2 = boxes[:, 1] + boxes[:, 3]
+    areas = (x2 - x1) * (y2 - y1)
+
+    order = scores.argsort()[::-1]
+    keep = []
+
+    while order.size > 0:
+        i = int(order[0])
+        keep.append(i)
+        if order.size == 1:
+            break
+
+        rest = order[1:]
+        xx1 = np.maximum(x1[i], x1[rest])
+        yy1 = np.maximum(y1[i], y1[rest])
+        xx2 = np.minimum(x2[i], x2[rest])
+        yy2 = np.minimum(y2[i], y2[rest])
+
+        inter_w = np.maximum(0.0, xx2 - xx1)
+        inter_h = np.maximum(0.0, yy2 - yy1)
+        inter = inter_w * inter_h
+        union = areas[i] + areas[rest] - inter
+        iou = inter / np.maximum(union, 1e-6)
+
+        order = rest[iou <= iou_threshold]
+
+    return keep
+
+
+def _detect_humans_custom(image, win_stride, scale, hit_threshold):
+    """Sliding-window multi-scale detector with custom HOG + linear SVM."""
+    svm_w, svm_b = _get_default_people_svm()
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    boxes = []
+    scores = []
+    scale_factor = 1.0
+    h0, w0 = gray.shape
+
+    while True:
+        sw = int(w0 / scale_factor)
+        sh = int(h0 / scale_factor)
+        if sw < _CUSTOM_WIN_W or sh < _CUSTOM_WIN_H:
+            break
+
+        scaled = cv2.resize(gray, (sw, sh), interpolation=cv2.INTER_LINEAR)
+        max_y = sh - _CUSTOM_WIN_H + 1
+        max_x = sw - _CUSTOM_WIN_W + 1
+
+        for y in range(0, max_y, win_stride[1]):
+            for x in range(0, max_x, win_stride[0]):
+                window = scaled[y:y + _CUSTOM_WIN_H, x:x + _CUSTOM_WIN_W]
+                feat = _compute_hog_descriptor(window)
+                if feat is None:
+                    continue
+                raw_score = float(np.dot(svm_w, feat) + svm_b)
+                # Align score scale with existing project thresholds (~0..1).
+                score = raw_score - _CUSTOM_SCORE_OFFSET
+                if score < hit_threshold:
+                    continue
+
+                x0 = int(round(x * scale_factor))
+                y0 = int(round(y * scale_factor))
+                ww = int(round(_CUSTOM_WIN_W * scale_factor))
+                hh = int(round(_CUSTOM_WIN_H * scale_factor))
+                boxes.append((x0, y0, ww, hh))
+                scores.append(score)
+
+        scale_factor *= scale
+
+    return boxes, scores
+
+
 def detect_humans(
     image,
     win_stride=(8, 8),
@@ -39,6 +198,7 @@ def detect_humans(
     hit_threshold=0.0,
     use_preprocessing=True,
     shrink_factor=0.0,
+    backend="opencv",
 ):
     """Detect humans using HOG + linear SVM.
 
@@ -55,35 +215,39 @@ def detect_humans(
     if use_preprocessing:
         image = preprocess_for_hog(image)
 
-    hog = cv2.HOGDescriptor()
-    hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+    if backend == "custom":
+        # Custom detector ignores explicit padding and runs pure sliding windows.
+        boxes, weights = _detect_humans_custom(
+            image=image,
+            win_stride=win_stride,
+            scale=scale,
+            hit_threshold=hit_threshold,
+        )
+    else:
+        hog = _get_opencv_hog_detector()
+        boxes, weights = hog.detectMultiScale(
+            image,
+            winStride=win_stride,
+            padding=padding,
+            scale=scale,
+            hitThreshold=hit_threshold,
+        )
 
-    boxes, weights = hog.detectMultiScale(
-        image,
-        winStride=win_stride,
-        padding=padding,
-        scale=scale,
-        hitThreshold=hit_threshold,
-    )
     if len(boxes) == 0:
         return []
 
-    weights = weights.reshape(-1)
+    boxes = np.asarray(boxes, dtype=np.int32)
+    weights = np.asarray(weights, dtype=np.float32).reshape(-1)
     keep = weights > score_threshold
     boxes = boxes[keep]
     weights = weights[keep]
     if len(boxes) == 0:
         return []
 
-    xywh = boxes.astype(np.float32)
-    keep_idx = cv2.dnn.NMSBoxes(
-        xywh.tolist(), weights.tolist(),
-        score_threshold=0.0, nms_threshold=nms_threshold,
-    )
-    if keep_idx is None or len(keep_idx) == 0:
+    keep_idx = _nms_xywh(boxes, weights, iou_threshold=nms_threshold)
+    if len(keep_idx) == 0:
         return boxes.tolist()
 
-    keep_idx = np.array(keep_idx).reshape(-1)
     result = boxes[keep_idx].tolist()
 
     if shrink_factor > 0:
