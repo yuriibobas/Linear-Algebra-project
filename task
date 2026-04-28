@@ -1,0 +1,164 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{amsmath}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{xcolor}
+
+\title{First Interim Report on Linear Algebra Project \\
+\large ``Image Composition and Spatial Rearrangement using Geometric Transformations''}
+\author{Team members: Yurii Bobas, Ivan Polianskyi, Artem Onyshchuk}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+In modern digital media, the manipulation of images (such as spatial rearrangement or object removal) is highly relevant for tasks ranging from data augmentation to privacy protection and media editing. Understanding the mathematical mechanics underlying these manipulations is critical. This project operates within the Computer Vision research area, specifically focusing on coordinate-based geometric transformations and mathematical image reconstruction. It is of great interest to us because it bridges abstract linear algebra concepts with direct visual outputs.
+
+The aim of this project is to design a program that identifies human figures in a static 2D image and swaps their positions using foundational linear algebra techniques, including feature extraction, coordinate-based geometric transformations, and matrix operations.
+
+The main tasks our team has established are:
+\begin{itemize}
+    \item \textbf{Human identification and isolation:} Detect target human figures utilizing the Histogram of Oriented Gradients (HOG) to compute gradient vectors, followed by a Support Vector Machine (SVM) classifier to separate the objects using a linear decision boundary.
+    \item \textbf{Spatial translation:} Apply transformation matrices to spatial coordinates to swap or move the isolated objects.
+    \item \textbf{Background reconstruction:} Fill the missing pixel values left by moved objects by constructing and solving a sparse system of linear equations based on the average of neighboring pixels.
+\end{itemize}
+
+\section{Methods and Alternative Approaches}
+There are multiple approaches to solving the core challenges of our pipeline: object detection and background inpainting.
+
+\subsection*{Approaches for Object Detection}
+\begin{itemize}
+    \item \textbf{Histogram of Oriented Gradients (HOG):} A feature descriptor that focuses on evaluating well-normalized local histograms of image gradient orientations in a dense grid.
+    \begin{itemize}
+        \item \textbf{Pros:} Highly robust to changes in lighting conditions and shadowing, capturing local edge and outline structures; requires straightforward, computationally efficient mathematical operations.
+        \item \textbf{Cons:} Highly sensitive to significant rotation and pose variations; vulnerable to partial occlusions which disrupt the feature vector.
+    \end{itemize}
+    
+    \item \textbf{Support Vector Machine (SVM):} A supervised classification model that constructs an optimal separating hyperplane in a high-dimensional space.
+    \begin{itemize}
+        \item \textbf{Pros:} Highly effective in high-dimensional spaces (perfectly complementing HOG features); memory-efficient during inference; offers clear mathematical interpretability for linear optimization.
+        \item \textbf{Cons:} Training complexity scales poorly with massive datasets; sensitive to noisy data and outliers where classes heavily overlap.
+    \end{itemize}
+
+    \item \textbf{Haar Feature-based Cascade Classifiers:} A classical machine learning object detection method used to identify figures based on simple regional contrast differences (Haar-like features).
+    \begin{itemize}
+        \item \textbf{Pros:} Extremely fast computational inference; requires minimal hardware resources; conceptually straightforward.
+        \item \textbf{Cons:} Highly sensitive to changes in lighting and complex backgrounds; struggles significantly with object occlusion; yields a higher false-positive rate compared to modern methods.
+    \end{itemize}
+    
+    \item \textbf{Convolutional Neural Networks (CNNs) (e.g., YOLO, Faster R-CNN):} The current industry standard, utilizing deep layered networks to extract hierarchical features automatically.
+    \begin{itemize}
+        \item \textbf{Pros:} State-of-the-art accuracy; highly robust to scale variations, complex lighting conditions, and partial occlusions.
+        \item \textbf{Cons:} Acts as a mathematical "black box," offering little to no interpretability; demands massive annotated datasets and heavy computation for both training and inference.
+    \end{itemize}
+
+    \item \textbf{Deformable Part Models (DPM):} An extension of the HOG approach that models an object as a collection of parts (e.g., head, torso, limbs) and calculates their spatial relationships.
+    \begin{itemize}
+        \item \textbf{Pros:} Handles pose variations and deformations better than a single rigid HOG template by using movable parts with learned deformation costs.
+        \item \textbf{Cons:} Computationally expensive to evaluate over multiple scales; implementation is significantly more complex than a standard SVM.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{Alternative Approaches for Background Inpainting}
+Once figures are spatially rearranged, filling the resulting missing pixel regions ("holes") requires synthesizing new data.
+
+\begin{itemize}
+    \item \textbf{Patch-based Methods (e.g., PatchMatch):} These algorithms iteratively search for and copy the best-matching square patches (textures) from known regions of the image to the missing regions.
+    \begin{itemize}
+        \item \textbf{Pros:} Excellent at preserving and reproducing complex, high-frequency textures; relies on an intuitive search and distance-metric optimization structure.
+        \item \textbf{Cons:} Prone to creating unnatural repetitive patterns, fails to reconstruct a region if the required structural texture does not exist elsewhere in the source image.
+    \end{itemize}
+    
+    \item \textbf{Deep Generative Models (GANs and Diffusion Models):} Modern AI networks that learn the statistical distribution of images to generate entirely new pixel data.
+    \begin{itemize}
+        \item \textbf{Pros:} Can generate highly photorealistic, contextually accurate structures.
+        \item \textbf{Cons:} Computationally massive; generation outputs can be unpredictable ("hallucinations").
+    \end{itemize}
+
+    \item \textbf{Fast Marching Method (Telea Inpainting):} A partial differential equation approach that propagates pixel information from the boundary of the hole inwards, based on normalized gradients.
+    \begin{itemize}
+        \item \textbf{Pros:} Computationally faster than explicitly solving large global sparse linear systems; produces smooth, continuous boundaries.
+        \item \textbf{Cons:} Similar to standard neighbor averaging, it causes heavy blurring in large missing regions and cannot synthesize granular texture.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{}
+To maintain the core focus of this project-direct application of linear algebra and bypassing heavy computations we skip methods with deep neural networks and complex non-linear optimizers.
+
+For detection, we apply HOG feature extraction combined with an SVM classifier, which directly optimizes a linear separating hyperplane ($w^T x + b = 0$). For spatial rearrangement, we construct $3 \times 3$ translation matrices mapped in a homogeneous coordinate system. For background inpainting, we implement the neighbor averaging method (an approximation of the discrete Laplace equation).
+It is important to note that the standard output of an SVM classifier over HOG features is a rectangular bounding box. Applying spatial transformations directly to this bounding box would incorrectly transfer the background pixels surrounding the detected figure. Therefore, an intermediate pixel-level segmentation step is required. Algorithms such as \textbf{GrabCut} (an iterative graph-cut optimization method) or color-based thresholding must be applied within the bounding box to separate the foreground object from the background, yielding a precise binary mask ($M$) where only the pixels belonging to the human figure are set to 1.
+
+
+\begin{algorithm}[H]
+\caption{Image Composition and Spatial Rearrangement}
+\SetAlgoLined
+\KwData{Input image matrix $I$ of size $m \times n \times 3$}
+\KwResult{Target image matrix $I_{new}$ with swapped figures and inpainted background}
+ Compute gradient vectors and HOG descriptors for regions in $I$\;
+ Classify regions using SVM linear decision boundary\;
+ Obtain bounding boxes $B_A$ and $B_B$ for Human A and B\;
+ 
+ Apply segmentation (e.g., GrabCut) within $B_A$ and $B_B$ to extract accurate binary masks $M_A$ and $M_B$\;
+ Extract features via Hadamard product (with color channel broadcasting): $Human\_A \gets I \circ M_A$, $Human\_B \gets I \circ M_B$\;
+ Define translation vectors $t_A, t_B$ and build $3 \times 3$ affine translation matrices $T_A, T_B$\;
+ \ForEach{pixel coordinate vector $v = [x, y, 1]^T \in Human\_A$}{
+  Apply translation: $v'_A \gets T_A v$\;
+ }
+ \ForEach{pixel coordinate vector $v = [x, y, 1]^T \in Human\_B$}{
+  Apply translation: $v'_B \gets T_B v$\;
+ }
+ Map new coordinates $v'_A$ and $v'_B$ onto blank matrix $I_{new}$\;
+ Identify missing pixels (holes) $\Omega$ in $I_{new}$\;
+ Initialize sparse coefficient matrix $A$ and constants vector $B$\;
+ \ForEach{missing pixel $X_i \in \Omega$}{
+  Construct discrete Laplace equation: $4X_i - P_{top} - P_{bottom} - P_{left} - P_{right} = 0$\;
+  \eIf{neighbor $P_j$ is known (border pixel)}{
+   Move pixel intensity $P_j$ to constants vector $B$\;
+  }{
+   Add coefficient $-1$ to corresponding column in sparse matrix $A$\;
+  }
+ }
+ Solve sparse linear system $AX = B$ via iterative numerical solver (e.g., Conjugate Gradient)\;
+ Update $I_{new}$ with solution vector $X$\;
+\end{algorithm}
+\section{Discussion and Project Plan}
+\subsection*{Testing methodology and Metrics}
+We plan to use standard open-source computer vision datasets (such as the INRIA Person dataset), alongside custom-captured images. 
+
+here are metrics which we will use in our project and why:
+
+\subsubsection*{Detection Metrics (Evaluating HOG + SVM)}
+\begin{itemize}
+    \item \textbf{Precision:} Calculates the percentage of positive predictions that are actual human figures (True Positives / Total Predicted Positives). We use this to track false alarms; a low precision indicates the SVM is frequently misclassifying background elements (like trees or shadows) as humans.
+    \item \textbf{Recall:} Calculates the percentage of actual human figures in the image that the model successfully detected (True Positives / Total Actual Positives). We use this to track missed targets; a low recall means the pipeline is failing to identify people present in the image.
+    \item \textbf{F1-Score:} The harmonic mean of Precision and Recall. We use this to provide a balanced evaluation. Tuning a model for high recall often hurts precision, so the F1-Score provides a single metric that balances this trade-off, completely bypassing the "accuracy paradox" of imbalanced datasets.
+    \item \textbf{Intersection over Union (IoU):} Measures the area of overlap between the predicted bounding box and the ground-truth bounding box, divided by their combined total area. We use this to measure spatial accuracy. Because the next step is spatial rearrangement, IoU objectively proves how precisely the algorithm isolates the figure's boundaries.
+\end{itemize}
+
+\subsubsection*{Transformation and Reconstruction Metrics}
+\begin{itemize}
+    \item \textbf{Mean Squared Error (MSE):} Calculates the average of the squared mathematical differences between the estimated pixel intensity values and the actual true pixel values. We use this to quantify inpainting quality. By taking an image with a known background, artificially masking a region, and running our neighbor-averaging matrix solver, we can compare the reconstructed pixels against the original pixels to determine mathematical accuracy.
+\end{itemize}
+\subsection*{Challenges}
+The most difficult step is inpainting. Explicitly calculating the inverse matrix $A^{-1}$ for thousands of missing pixels is computationally unfeasible. We must represent $A$ as a sparse matrix and use efficient numerical methods to solve $AX = B$. Additionally, neighbor averaging often creates a ``blurring'' effect, which may require further mathematical refinement.
+
+\subsection*{Future Research Schedule}
+\begin{itemize}
+    \item \textbf{Weeks 1-2:} Extracting gradient features (HOG), applying SVM, generating binary masks, and implementing geometric transformation matrices.
+    \item \textbf{Weeks 3-4:} Developing the neighbor averaging inpainting algorithm and setting up the system of linear equations.
+    \item \textbf{Weeks 5-6:} Code optimization (focusing on sparse matrix solvers), comprehensive dataset testing, and presentation preparation.
+\end{itemize}
+
+\begin{thebibliography}{9}
+\bibitem{dalal2005histograms}
+Dalal, N., \& Triggs, B. (2005). Histograms of oriented gradients for human detection. \textit{In 2005 IEEE computer society conference on computer vision and pattern recognition (CVPR'05)} (Vol. 1, pp. 886-893). IEEE.
+
+\bibitem{cortes1995support}
+Cortes, C., \& Vapnik, V. (1995). Support-vector networks. \textit{Machine learning}, 20(3), 273-297.
+\end{thebibliography}
+
+\end{document}

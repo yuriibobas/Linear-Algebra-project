@@ -14,6 +14,12 @@ result_image.jpg
 gui_result.jpg
 pre_inpainting_*.jpg
 plot_*.jpg
+metrics_report.md
+
+# Dataset (downloaded automatically by tune_on_dataset.py)
+PennFudanPed/
+PennFudanPed.zip
+dataset_tuning_results.json
 
 # Editor and IDE configurations
 .vscode/
