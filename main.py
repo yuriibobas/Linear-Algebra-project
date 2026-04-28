@@ -38,6 +38,9 @@ def process_image(
     use_preprocessing=True,
     shrink_factor=0.0,
     grabcut_iters=5,
+    morph_kernel_size=5,
+    morph_open_iters=2,
+    morph_close_iters=2,
 ):
     I = cv2.imread(image_path)
     if I is None:
@@ -63,7 +66,13 @@ def process_image(
 
     print(f"Detected {len(boxes)} humans. Using the two largest.")
 
-    masks_data = get_binary_masks(I, boxes, grabcut_iters=grabcut_iters)
+    masks_data = get_binary_masks(
+        I, boxes,
+        grabcut_iters=grabcut_iters,
+        morph_kernel_size=morph_kernel_size,
+        morph_open_iters=morph_open_iters,
+        morph_close_iters=morph_close_iters,
+    )
 
     mask_A, rect_A = masks_data[0]
     mask_B, rect_B = masks_data[1]
@@ -178,6 +187,9 @@ if __name__ == "__main__":
     scale        = args.scale        or _get(cfg, "detection", "scale",        1.05)
     nms_thr      = args.nms_threshold or _get(cfg, "detection", "nms_threshold", 0.25)
     grabcut_iters = args.grabcut_iters or _get(cfg, "masks", "grabcut_iters", 5)
+    morph_kernel_size = _get(cfg, "masks", "morph_kernel_size", 5)
+    morph_open_iters  = _get(cfg, "masks", "morph_open_iters",  2)
+    morph_close_iters = _get(cfg, "masks", "morph_close_iters", 2)
 
     if args.score_threshold >= 0.0:
         score_thr = args.score_threshold
@@ -211,5 +223,8 @@ if __name__ == "__main__":
             use_preprocessing=use_preprocess,
             shrink_factor=shrink,
             grabcut_iters=grabcut_iters,
+            morph_kernel_size=morph_kernel_size,
+            morph_open_iters=morph_open_iters,
+            morph_close_iters=morph_close_iters,
         )
 

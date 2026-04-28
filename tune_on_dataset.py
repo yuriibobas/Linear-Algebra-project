@@ -6,6 +6,7 @@ import urllib.request
 import zipfile
 import os
 import time
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import cv2
@@ -36,12 +37,37 @@ def download_dataset():
 
 
 def parse_annotation(ann_path):
+    ann_path = Path(ann_path)
+    boxes = []
+
+    # Підтримка формату Pascal VOC (XML) - використовується в INRIA
+    if ann_path.suffix.lower() == '.xml':
+        try:
+            tree = ET.parse(ann_path)
+            root = tree.getroot()
+            for obj in root.findall('object'):
+                name = obj.find('name')
+                if name is not None and name.text.lower() != 'person':
+                    continue
+                bndbox = obj.find('bndbox')
+                if bndbox is not None:
+                    x1 = int(float(bndbox.find('xmin').text))
+                    y1 = int(float(bndbox.find('ymin').text))
+                    x2 = int(float(bndbox.find('xmax').text))
+                    y2 = int(float(bndbox.find('ymax').text))
+                    w, h = x2 - x1, y2 - y1
+                    if w > 10 and h > 10:
+                        boxes.append((x1, y1, w, h))
+        except Exception as e:
+            print(f"Error parsing XML {ann_path}: {e}")
+        return boxes
+
+    # Підтримка формату Penn-Fudan (TXT)
     pattern = re.compile(
         r'bounding box for object\s+\d+.*?:\s*\((\d+),\s*(\d+)\)\s*-\s*\((\d+),\s*(\d+)\)',
         re.IGNORECASE,
     )
-    boxes = []
-    for line in Path(ann_path).read_text(encoding="utf-8").splitlines():
+    for line in ann_path.read_text(encoding="utf-8").splitlines():
         m = pattern.search(line)
         if m:
             x1, y1, x2, y2 = [int(m.group(i)) - 1 for i in range(1, 5)]
@@ -53,18 +79,62 @@ def parse_annotation(ann_path):
     return boxes
 
 
-def load_dataset(max_images=170):
-    ann_dir = Path(DATASET_DIR) / "Annotation"
-    img_dir = Path(DATASET_DIR) / "PNGImages"
+def load_dataset(dataset_dir, max_images=170):
+    base_dir = Path(dataset_dir)
     entries = []
-    for ann_path in sorted(ann_dir.glob("*.txt"))[:max_images]:
-        img_path = img_dir / (ann_path.stem + ".png")
-        if not img_path.exists():
-            continue
+
+    # 1. Формат Pascal VOC / INRIA (підпапки Annotations та JPEGImages)
+    ann_dir_voc = base_dir / "Annotations"
+    img_dir_voc = base_dir / "JPEGImages"
+
+    if ann_dir_voc.exists() and img_dir_voc.exists():
+        for ann_path in sorted(ann_dir_voc.glob("*.xml"))[:max_images]:
+            img_path = img_dir_voc / (ann_path.stem + ".jpg")
+            if not img_path.exists():
+                img_path = img_dir_voc / (ann_path.stem + ".png")
+            if not img_path.exists():
+                continue
+            img = cv2.imread(str(img_path))
+            gt = parse_annotation(str(ann_path))
+            if img is not None and gt:
+                entries.append({"image": img, "gt_boxes": gt})
+        if entries:
+            return entries
+
+    # 2. Формат Penn-Fudan (підпапки Annotation та PNGImages)
+    ann_dir = base_dir / "Annotation"
+    img_dir = base_dir / "PNGImages"
+
+    if ann_dir.exists() and img_dir.exists():
+        for ann_path in sorted(ann_dir.glob("*.txt"))[:max_images]:
+            img_path = img_dir / (ann_path.stem + ".png")
+            if not img_path.exists():
+                img_path = img_dir / (ann_path.stem + ".jpg")
+            if not img_path.exists():
+                continue
+            img = cv2.imread(str(img_path))
+            gt = parse_annotation(str(ann_path))
+            if img is not None and gt:
+                entries.append({"image": img, "gt_boxes": gt})
+        if entries:
+            return entries
+
+    # 3. Якщо підпапок немає, шукаємо просто картинки та .txt/.xml файли в тій самій папці
+    image_paths = sorted(list(base_dir.glob("*.png")) + list(base_dir.glob("*.jpg")))
+    for img_path in image_paths[:max_images]:
+        ann_path_xml = img_path.with_suffix(".xml")
+        ann_path_txt = img_path.with_suffix(".txt")
+        
+        gt = []
+        if ann_path_xml.exists():
+            gt = parse_annotation(str(ann_path_xml))
+        elif ann_path_txt.exists():
+            gt = parse_annotation(str(ann_path_txt))
+            
         img = cv2.imread(str(img_path))
-        gt = parse_annotation(str(ann_path))
-        if img is not None and gt:
+        if img is not None:
             entries.append({"image": img, "gt_boxes": gt})
+
     return entries
 
 
@@ -252,15 +322,32 @@ def main():
     parser.add_argument("--max", type=int, default=30, help="Max images to use (default: 30 for speed).")
     parser.add_argument("--trials", type=int, default=50, help="Number of Optuna trials (default: 50).")
     parser.add_argument("--iou", type=float, default=0.5, help="IoU match threshold (default: 0.5).")
+    parser.add_argument("--dataset", type=str, default="", help="Path to custom dataset folder with images and annotations.")
     args = parser.parse_args()
 
-    download_dataset()
+    if args.dataset:
+        dataset_path = args.dataset
+        print(f"\nUsing custom dataset from: {dataset_path}")
+    else:
+        dataset_path = DATASET_DIR
+        download_dataset()
 
-    print(f"\nLoading dataset (up to {args.max} images)...")
-    entries = load_dataset(max_images=args.max)
+    print(f"Loading dataset (up to {args.max} images)...")
+    entries = load_dataset(dataset_path, max_images=args.max)
     if not entries:
         print("No images loaded. Check dataset directory.")
         return
+        
+    has_gt = any(len(e["gt_boxes"]) > 0 for e in entries)
+    if not has_gt:
+        print("\nПОМИЛКА: Не знайдено жодної розмітки (ground truth) у форматі .txt!")
+        print("Без розмітки неможливо порахувати F1-Score та знайти найкращі параметри.")
+        print("Переконайся, що:")
+        print("1. Якщо ти використовуєш кастомну папку, поряд з картинками є .txt файли з розміткою.")
+        print("2. Якщо ти використовуєш PennFudanPed, не вказуй підпапку PNGImages напряму (просто --dataset PennFudanPed).")
+        import sys
+        sys.exit(1)
+        
     print(f"Loaded {len(entries)} images.\n")
 
     run_optuna_search(entries, n_trials=args.trials, iou_threshold=args.iou)

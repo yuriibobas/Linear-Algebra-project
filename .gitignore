@@ -8,6 +8,8 @@ venv/
 .venv/
 env/
 .env/
+archive
+debug_stages_best
 
 # Output and temporary images
 result_image.jpg
