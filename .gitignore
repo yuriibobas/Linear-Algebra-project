@@ -17,6 +17,9 @@ gui_result.jpg
 pre_inpainting_*.jpg
 plot_*.jpg
 metrics_report.md
+artifacts/images/*
+artifacts/results/*
+artifacts/presentation_plots/*
 
 # Dataset (downloaded automatically by tune_on_dataset.py)
 PennFudanPed/
@@ -42,6 +45,7 @@ Thumbs.db
 .coverage
 .coverage.*
 htmlcov/
+__pycache__/
 
 # Build and packaging artifacts
 build/

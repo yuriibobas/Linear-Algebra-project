@@ -8,9 +8,16 @@ import os
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
+import sys
+
 import cv2
 import numpy as np
 import optuna
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from detection import preprocess_for_hog, shrink_boxes
 from metrics import evaluate_detections
 DATASET_URL = 'https://www.cis.upenn.edu/~jshi/ped_html/PennFudanPed.zip'

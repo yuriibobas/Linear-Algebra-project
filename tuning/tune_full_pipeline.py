@@ -1,8 +1,16 @@
 import argparse
 import json
 from itertools import product
+from pathlib import Path
+import sys
+
 import cv2
 import numpy as np
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from detection import detect_humans, get_binary_masks
 from inpainting import inpaint_neighbor_averaging
 from metrics import evaluate_detections

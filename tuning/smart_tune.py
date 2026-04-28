@@ -2,9 +2,17 @@ import argparse
 import configparser
 import json
 import time
+from pathlib import Path
+import sys
+
 import cv2
 import numpy as np
 import optuna
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 from detection import detect_humans, get_binary_masks
 from inpainting import inpaint_neighbor_averaging

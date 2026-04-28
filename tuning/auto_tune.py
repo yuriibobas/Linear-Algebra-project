@@ -3,12 +3,21 @@ import configparser
 import json
 import time
 from itertools import product
+from pathlib import Path
+import sys
+
 import cv2
 import numpy as np
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from detection import detect_humans, get_binary_masks
 from inpainting import inpaint_neighbor_averaging
 from metrics import evaluate_detections
 from transformation import apply_translation
+
 PARAM_GRID = {'win_stride': [(8, 8), (4, 4)], 'padding': [(8, 8), (16, 16)], 'scale': [1.03, 1.05, 1.08], 'hit_threshold': [0.0, 0.2, 0.5], 'score_threshold': [0.0, 0.1, 0.3], 'nms_threshold': [0.25, 0.35, 0.5], 'use_preprocessing': [True, False], 'shrink_factor': [0.0, 0.08, 0.12, 0.15, 0.2], 'grabcut_iters': [5, 7, 10]}
 
 def parse_gt_boxes(gt_raw):

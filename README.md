@@ -31,6 +31,9 @@ Image composition: human detection, geometric transformations (translation/scali
 - `metrics.py` - helper metrics (`IoU`, `MSE`, `precision/recall/F1`).
 - `requirements.txt` - Python dependencies.
 - `.gitignore` - files and folders ignored by Git.
+- `tuning/` - all tuning and analytics scripts.
+- `docs/interim_report.tex` - interim project report.
+- `artifacts/` - generated images, tuning results, and presentation plots.
 
 ## Quick Start
 
@@ -39,3 +42,11 @@ Image composition: human detection, geometric transformations (translation/scali
 2. Run:
    - command-line mode: `python main.py`
    - GUI mode: `python gui.py`
+
+## Tuning Scripts
+
+- `python tuning/auto_tune.py` - brute-force tuning for full pipeline.
+- `python tuning/smart_tune.py` - 2-phase Optuna tuning (HOG then masks).
+- `python tuning/tune_full_pipeline.py` - lightweight full-pipeline grid tuning.
+- `python tuning/tune_on_dataset.py` - dataset-based HOG tuning with GT boxes.
+- `python tuning/generate_presentation_plots.py` - build analytics charts for slides.
