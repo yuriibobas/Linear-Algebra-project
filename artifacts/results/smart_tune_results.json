@@ -1,0 +1,83 @@
+{
+  "method": "Multi-Objective Bayesian Optimization (MOTPE)",
+  "trials": 2,
+  "elapsed_sec": 2.1,
+  "pareto_front_size": 2,
+  "pareto_front": [
+    {
+      "trial_id": 0,
+      "scores": {
+        "det_score": 0.0,
+        "hole_score": 0.0,
+        "continuity": 0.0,
+        "texture": 0.0
+      },
+      "heuristic_total": 0.0,
+      "params": {
+        "win_stride_w": 8,
+        "win_stride_h": 4,
+        "padding_w": 8,
+        "padding_h": 8,
+        "scale": 1.02,
+        "hit_threshold": 0.8,
+        "score_threshold": 0.4,
+        "nms_threshold": 0.30000000000000004,
+        "use_preprocessing": false,
+        "shrink_factor": 0.06,
+        "grabcut_iters": 8,
+        "morph_kernel_size": 5,
+        "morph_open_iters": 1,
+        "morph_close_iters": 2,
+        "bg_dilate_k": 3,
+        "fg_erode_k": 3,
+        "blend_blur_k": 13,
+        "win_stride": [
+          8,
+          4
+        ],
+        "padding": [
+          8,
+          8
+        ]
+      }
+    },
+    {
+      "trial_id": 1,
+      "scores": {
+        "det_score": 0.0,
+        "hole_score": 0.0,
+        "continuity": 0.0,
+        "texture": 0.0
+      },
+      "heuristic_total": 0.0,
+      "params": {
+        "win_stride_w": 8,
+        "win_stride_h": 8,
+        "padding_w": 32,
+        "padding_h": 32,
+        "scale": 1.1,
+        "hit_threshold": 0.7000000000000001,
+        "score_threshold": 0.1,
+        "nms_threshold": 0.2,
+        "use_preprocessing": true,
+        "shrink_factor": 0.02,
+        "grabcut_iters": 7,
+        "morph_kernel_size": 3,
+        "morph_open_iters": 3,
+        "morph_close_iters": 1,
+        "bg_dilate_k": 9,
+        "fg_erode_k": 3,
+        "blend_blur_k": 15,
+        "win_stride": [
+          8,
+          8
+        ],
+        "padding": [
+          32,
+          32
+        ]
+      }
+    }
+  ],
+  "all_trials": []
+}

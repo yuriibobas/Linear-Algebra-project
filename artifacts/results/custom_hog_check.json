@@ -1,0 +1,48 @@
+{
+  "method": "2-Phase Optuna (HOG -> GrabCut+Morph)",
+  "total_elapsed_sec": 564.8,
+  "best_hog_params": {
+    "win_stride": [
+      8,
+      8
+    ],
+    "padding": [
+      8,
+      8
+    ],
+    "scale": 1.02,
+    "hit_threshold": 0.0,
+    "score_threshold": 0.45,
+    "nms_threshold": 0.5,
+    "use_preprocessing": true,
+    "shrink_factor": 0.2
+  },
+  "best_grabcut_params": {
+    "grabcut_iters": 5,
+    "morph_kernel_size": 5,
+    "morph_open_iters": 2,
+    "morph_close_iters": 2
+  },
+  "phase1_trials": [
+    {
+      "trial": 0,
+      "det_score": 0.0,
+      "n_boxes": 0,
+      "win_stride": [
+        8,
+        8
+      ],
+      "padding": [
+        8,
+        8
+      ],
+      "scale": 1.02,
+      "hit_threshold": 0.0,
+      "score_threshold": 0.45,
+      "nms_threshold": 0.5,
+      "use_preprocessing": true,
+      "shrink_factor": 0.2
+    }
+  ],
+  "phase2_trials": []
+}
